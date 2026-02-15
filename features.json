@@ -1,0 +1,218 @@
+{
+  "version": "1.0",
+  "project": "大模型驱动的股票分析系统",
+  "description": "基于LLM的智能股票分析系统",
+  "created_at": "2026-02-15T20:00:00",
+  "features": [
+    {
+      "id": "infra-001",
+      "category": "infrastructure",
+      "description": "项目初始化和环境配置",
+      "steps": [
+        "创建项目目录结构",
+        "设置虚拟环境",
+        "安装基础依赖",
+        "配置环境变量",
+        "验证Python环境"
+      ],
+      "passes": false,
+      "priority": "high"
+    },
+    {
+      "id": "infra-002",
+      "category": "infrastructure",
+      "description": "FastAPI 后端基础框架搭建",
+      "steps": [
+        "创建 FastAPI 应用入口",
+        "配置 CORS 中间件",
+        "设置日志系统",
+        "创建基础路由结构",
+        "验证服务可启动"
+      ],
+      "passes": false,
+      "priority": "high"
+    },
+    {
+      "id": "infra-003",
+      "category": "infrastructure",
+      "description": "数据库连接配置",
+      "steps": [
+        "配置 PostgreSQL 连接",
+        "配置 Redis 连接",
+        "创建数据库模型基类",
+        "实现连接池管理",
+        "测试数据库连接"
+      ],
+      "passes": false,
+      "priority": "high"
+    },
+    {
+      "id": "data-001",
+      "category": "data",
+      "description": "股票数据获取模块",
+      "steps": [
+        "集成 Tushare/AkShare API",
+        "实现股票基本信息查询",
+        "实现历史K线数据获取",
+        "实现实时行情获取",
+        "添加数据缓存层"
+      ],
+      "passes": false,
+      "priority": "high"
+    },
+    {
+      "id": "data-002",
+      "category": "data",
+      "description": "股票数据存储",
+      "steps": [
+        "设计股票数据表结构",
+        "创建数据模型",
+        "实现数据入库脚本",
+        "实现增量更新逻辑",
+        "验证数据完整性"
+      ],
+      "passes": false,
+      "priority": "medium"
+    },
+    {
+      "id": "llm-001",
+      "category": "llm",
+      "description": "LLM 集成基础架构",
+      "steps": [
+        "设计 LLM 抽象接口",
+        "集成 Anthropic Claude",
+        "集成 OpenAI GPT",
+        "实现对话上下文管理",
+        "添加 API 密钥管理"
+      ],
+      "passes": false,
+      "priority": "high"
+    },
+    {
+      "id": "llm-002",
+      "category": "llm",
+      "description": "股票分析 Prompt 模板",
+      "steps": [
+        "设计系统提示词",
+        "创建股票分析模板",
+        "实现技术分析提示",
+        "实现基本面分析提示",
+        "测试提示词效果"
+      ],
+      "passes": false,
+      "priority": "high"
+    },
+    {
+      "id": "api-001",
+      "category": "api",
+      "description": "股票查询 API",
+      "steps": [
+        "实现股票搜索接口",
+        "实现实时行情接口",
+        "实现历史数据接口",
+        "实现股票详情接口",
+        "添加请求频率限制"
+      ],
+      "passes": false,
+      "priority": "high"
+    },
+    {
+      "id": "api-002",
+      "category": "api",
+      "description": "智能问答 API",
+      "steps": [
+        "实现对话接口",
+        "实现流式响应",
+        "添加上下文管理",
+        "实现会话历史存储",
+        "添加错误处理"
+      ],
+      "passes": false,
+      "priority": "high"
+    },
+    {
+      "id": "api-003",
+      "category": "api",
+      "description": "股票分析报告 API",
+      "steps": [
+        "实现技术分析接口",
+        "实现基本面分析接口",
+        "实现投资建议生成",
+        "实现报告格式化",
+        "添加缓存机制"
+      ],
+      "passes": false,
+      "priority": "medium"
+    },
+    {
+      "id": "analysis-001",
+      "category": "analysis",
+      "description": "技术指标计算",
+      "steps": [
+        "实现移动平均线",
+        "实现 MACD 指标",
+        "实现 RSI 指标",
+        "实现布林带指标",
+        "实现 KDJ 指标"
+      ],
+      "passes": false,
+      "priority": "medium"
+    },
+    {
+      "id": "analysis-002",
+      "category": "analysis",
+      "description": "K线形态识别",
+      "steps": [
+        "实现基本K线形态识别",
+        "实现组合形态识别",
+        "实现成交量分析",
+        "实现趋势判断",
+        "添加形态识别可视化"
+      ],
+      "passes": false,
+      "priority": "medium"
+    },
+    {
+      "id": "frontend-001",
+      "category": "frontend",
+      "description": "前端基础框架",
+      "steps": [
+        "创建 React 项目",
+        "配置 TypeScript",
+        "设置路由结构",
+        "配置状态管理",
+        "实现基础布局"
+      ],
+      "passes": false,
+      "priority": "medium"
+    },
+    {
+      "id": "frontend-002",
+      "category": "frontend",
+      "description": "股票搜索和展示",
+      "steps": [
+        "实现股票搜索组件",
+        "实现股票列表展示",
+        "实现K线图表展示",
+        "实现技术指标展示",
+        "添加数据刷新"
+      ],
+      "passes": false,
+      "priority": "medium"
+    },
+    {
+      "id": "frontend-003",
+      "category": "frontend",
+      "description": "智能问答界面",
+      "steps": [
+        "实现聊天窗口",
+        "实现消息展示",
+        "实现流式响应展示",
+        "实现会话管理",
+        "添加快捷提问"
+      ],
+      "passes": false,
+      "priority": "medium"
+    }
+  ]
+}
