@@ -44,8 +44,9 @@
         "实现连接池管理",
         "测试数据库连接"
       ],
-      "passes": false,
-      "priority": "high"
+      "passes": true,
+      "priority": "high",
+      "completed_at": "2026-02-16T12:00:00"
     },
     {
       "id": "data-001",
@@ -102,8 +103,9 @@
         "实现基本面分析提示",
         "测试提示词效果"
       ],
-      "passes": false,
-      "priority": "high"
+      "passes": true,
+      "priority": "high",
+      "completed_at": "2026-02-16T12:00:00"
     },
     {
       "id": "api-001",
@@ -131,8 +133,9 @@
         "实现会话历史存储",
         "添加错误处理"
       ],
-      "passes": false,
-      "priority": "high"
+      "passes": true,
+      "priority": "high",
+      "completed_at": "2026-02-16T12:00:00"
     },
     {
       "id": "api-003",
@@ -159,8 +162,9 @@
         "实现布林带指标",
         "实现 KDJ 指标"
       ],
-      "passes": false,
-      "priority": "medium"
+      "passes": true,
+      "priority": "medium",
+      "completed_at": "2026-02-16T12:00:00"
     },
     {
       "id": "analysis-002",
