@@ -58,8 +58,9 @@
         "实现实时行情获取",
         "添加数据缓存层"
       ],
-      "passes": false,
-      "priority": "high"
+      "passes": true,
+      "priority": "high",
+      "completed_at": "2026-02-16T00:30:00"
     },
     {
       "id": "data-002",
@@ -86,8 +87,9 @@
         "实现对话上下文管理",
         "添加 API 密钥管理"
       ],
-      "passes": false,
-      "priority": "high"
+      "passes": true,
+      "priority": "high",
+      "completed_at": "2026-02-16T11:50:00"
     },
     {
       "id": "llm-002",
@@ -114,8 +116,9 @@
         "实现股票详情接口",
         "添加请求频率限制"
       ],
-      "passes": false,
-      "priority": "high"
+      "passes": true,
+      "priority": "high",
+      "completed_at": "2026-02-16T11:40:00"
     },
     {
       "id": "api-002",
