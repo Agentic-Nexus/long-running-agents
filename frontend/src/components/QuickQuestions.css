@@ -1,0 +1,33 @@
+.quick-questions {
+  padding: 12px 16px;
+  border-top: 1px solid #3a3a3c;
+}
+
+.quick-questions-label {
+  font-size: 12px;
+  color: #8e8e93;
+  margin-bottom: 8px;
+}
+
+.quick-questions-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.quick-question-btn {
+  padding: 6px 12px;
+  font-size: 13px;
+  background-color: #2c2c2e;
+  color: #e5e5e7;
+  border: 1px solid #3a3a3c;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.quick-question-btn:hover {
+  background-color: #3a3a3c;
+  border-color: #4a90d9;
+  color: #4a90d9;
+}

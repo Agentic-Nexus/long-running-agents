@@ -194,8 +194,9 @@
         "配置状态管理",
         "实现基础布局"
       ],
-      "passes": false,
-      "priority": "medium"
+      "passes": true,
+      "priority": "medium",
+      "completed_at": "2026-02-16T12:45:00"
     },
     {
       "id": "frontend-002",
@@ -208,8 +209,9 @@
         "实现技术指标展示",
         "添加数据刷新"
       ],
-      "passes": false,
-      "priority": "medium"
+      "passes": true,
+      "priority": "medium",
+      "completed_at": "2026-02-16T12:45:00"
     },
     {
       "id": "frontend-003",
@@ -222,8 +224,9 @@
         "实现会话管理",
         "添加快捷提问"
       ],
-      "passes": false,
-      "priority": "medium"
+      "passes": true,
+      "priority": "medium",
+      "completed_at": "2026-02-16T12:45:00"
     }
   ]
 }
