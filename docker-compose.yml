@@ -1,0 +1,128 @@
+# 大模型驱动的股票分析系统 - Docker Compose
+# 支持开发/生产环境配置
+
+services:
+  # ===================
+  # PostgreSQL 数据库
+  # ===================
+  postgres:
+    image: postgres:15-alpine
+    container_name: stock_analyzer_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USER:-stockuser}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-stockpass}
+      POSTGRES_DB: ${DB_NAME:-stock_db}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-stockuser}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - stock_network
+
+  # ===================
+  # Redis 缓存
+  # ===================
+  redis:
+    image: redis:7-alpine
+    container_name: stock_analyzer_redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - stock_network
+
+  # ===================
+  # 后端 API
+  # ===================
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: stock_analyzer_backend
+    restart: unless-stopped
+    environment:
+      # 环境模式
+      - ENV=${ENV:-production}
+      # 数据库
+      - DATABASE_URL=postgresql+asyncpg://${DB_USER:-stockuser}:${DB_PASSWORD:-stockpass}@postgres:5432/${DB_NAME:-stock_db}
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=${DB_USER:-stockuser}
+      - DB_PASSWORD=${DB_PASSWORD:-stockpass}
+      - DB_NAME=${DB_NAME:-stock_db}
+      # Redis
+      - REDIS_URL=redis://redis:6379/0
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      # LLM 配置
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - ANTHROPIC_MODEL=${ANTHROPIC_MODEL:-claude-opus-4-5}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - OPENAI_MODEL=${OPENAI_MODEL:-gpt-4-turbo}
+      # 股票数据
+      - TUSHARE_TOKEN=${TUSHARE_TOKEN}
+      # 应用配置
+      - DEBUG=false
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - SECRET_KEY=${SECRET_KEY:-change-me-in-production}
+    ports:
+      - "${BACKEND_PORT:-8000}:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import httpx; httpx.get('http://localhost:8000/health', timeout=5)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    networks:
+      - stock_network
+
+  # ===================
+  # 前端
+  # ===================
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: stock_analyzer_frontend
+    restart: unless-stopped
+    ports:
+      - "${FRONTEND_PORT:-80}:80"
+    depends_on:
+      - backend
+    networks:
+      - stock_network
+
+# ===================
+# 网络
+# ===================
+networks:
+  stock_network:
+    driver: bridge
+
+# ===================
+# 卷
+# ===================
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local

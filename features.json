@@ -258,6 +258,94 @@
       "passes": true,
       "priority": "medium",
       "completed_at": "2026-02-16T13:55:00"
+    },
+    {
+      "id": "api-006",
+      "category": "api",
+      "description": "用户认证与权限管理",
+      "steps": [
+        "实现用户注册登录接口",
+        "实现 JWT 令牌认证",
+        "实现用户权限验证",
+        "实现 API 密钥管理",
+        "添加用户会话管理"
+      ],
+      "passes": true,
+      "priority": "high",
+      "completed_at": "2026-02-16T22:50:00"
+    },
+    {
+      "id": "api-007",
+      "category": "api",
+      "description": "实时行情 WebSocket",
+      "steps": [
+        "实现 WebSocket 连接管理",
+        "实现实时行情推送",
+        "实现心跳保活机制",
+        "实现多客户端管理",
+        "添加连接断开处理"
+      ],
+      "passes": true,
+      "priority": "high",
+      "completed_at": "2026-02-16T22:50:00"
+    },
+    {
+      "id": "feature-001",
+      "category": "feature",
+      "description": "股票预警功能",
+      "steps": [
+        "设计预警规则引擎",
+        "实现价格预警",
+        "实现涨跌幅预警",
+        "实现成交量异动预警",
+        "添加预警通知推送"
+      ],
+      "passes": true,
+      "priority": "medium",
+      "completed_at": "2026-02-16T23:30:00"
+    },
+    {
+      "id": "feature-002",
+      "category": "feature",
+      "description": "投资组合管理",
+      "steps": [
+        "创建投资组合模型",
+        "实现持仓管理",
+        "实现收益计算",
+        "实现组合分析报告",
+        "添加历史记录追踪"
+      ],
+      "passes": false,
+      "priority": "medium"
+    },
+    {
+      "id": "infra-004",
+      "category": "infrastructure",
+      "description": "Docker 部署支持",
+      "steps": [
+        "创建 Dockerfile",
+        "创建 docker-compose.yml",
+        "配置环境变量",
+        "添加 Nginx 反向代理配置",
+        "实现多环境配置"
+      ],
+      "passes": true,
+      "priority": "medium",
+      "completed_at": "2026-02-16T22:45:00"
+    },
+    {
+      "id": "ops-001",
+      "category": "ops",
+      "description": "定时任务调度",
+      "steps": [
+        "实现定时数据更新任务",
+        "实现缓存预热任务",
+        "实现预警检查任务",
+        "实现数据清理任务",
+        "添加任务监控面板"
+      ],
+      "passes": false,
+      "priority": "medium"
     }
   ]
 }

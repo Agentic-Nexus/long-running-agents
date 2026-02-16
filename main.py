@@ -7,7 +7,7 @@ from contextlib import asynccontextmanager
 import logging
 from app.utils.logger import setup_logger
 from app.api import router as api_router
-from app.api import health, stocks, chat, analysis, export
+from app.api import health, stocks, chat, analysis, export, websocket, auth, alert
 
 # 配置日志
 logger = setup_logger("stock_analyzer", level=logging.INFO)
@@ -47,6 +47,9 @@ app.include_router(stocks.router, prefix="/api/v1/stocks", tags=["stocks"])
 app.include_router(chat.router, prefix="/api/v1", tags=["chat"])
 app.include_router(analysis.router, prefix="/api/v1/analysis", tags=["analysis"])
 app.include_router(export.router, prefix="/api/v1/stocks", tags=["export"])
+app.include_router(auth.router, prefix="/api/v1", tags=["auth"])
+app.include_router(websocket.router, prefix="/api/v1", tags=["websocket"])
+app.include_router(alert.router, prefix="/api/v1/alerts", tags=["alerts"])
 
 
 @app.get("/")

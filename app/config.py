@@ -43,7 +43,11 @@ class Config:
         # 应用配置
         self.debug: bool = os.getenv("DEBUG", "true").lower() == "true"
         self.log_level: str = os.getenv("LOG_LEVEL", "INFO")
-        self.secret_key: str = os.getenv("SECRET_KEY", "dev-secret-key")
+        self.secret_key: str = os.getenv("SECRET_KEY", "dev-secret-key-change-in-production")
+
+        # 认证配置
+        self.access_token_expire_minutes: int = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "30"))
+        self.refresh_token_expire_days: int = int(os.getenv("REFRESH_TOKEN_EXPIRE_DAYS", "7"))
 
     def get(self, key: str, default: Any = None) -> Any:
         """
