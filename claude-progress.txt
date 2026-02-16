@@ -6,15 +6,21 @@
 
 ## Session History
 -----------------
+[20260216_001] 2026-02-16 00:00 - Completed: infra-002 (FastAPI 后端基础框架搭建)
+  - 创建日志配置模块 (app/utils/logger.py)
+  - 创建健康检查路由 (app/api/health.py)
+  - 创建股票API路由占位 (app/api/stocks.py)
+  - 完善 main.py 整合路由
+  - 编写测试用例 (tests/test_api.py)
+  - 9/9 tests passed
 
 ## Current Status
 -----------------
-- Phase: INITIALIZATION
-- Features completed: 0
-- Features remaining: 15
+- Phase: DEVELOPMENT
+- Features completed: 1
+- Features remaining: 14
 
 ## Next Steps
 -------------
-1. Run init.sh to start development server
-2. Read features.json to understand required functionality
-3. Begin implementing features one by one
+1. Continue with next high priority feature
+2. infra-003: 数据库连接配置

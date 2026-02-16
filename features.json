@@ -29,8 +29,9 @@
         "创建基础路由结构",
         "验证服务可启动"
       ],
-      "passes": false,
-      "priority": "high"
+      "passes": true,
+      "priority": "high",
+      "completed_at": "2026-02-16T00:00:00"
     },
     {
       "id": "infra-003",

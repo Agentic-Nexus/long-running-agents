@@ -3,17 +3,32 @@
 """
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from contextlib import asynccontextmanager
 import logging
+from app.utils.logger import setup_logger
+from app.api import router as api_router
+from app.api import health, stocks
 
 # 配置日志
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+logger = setup_logger("stock_analyzer", level=logging.INFO)
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """应用生命周期管理"""
+    # 启动时
+    logger.info("Starting LLM Stock Analyzer...")
+    yield
+    # 关闭时
+    logger.info("Shutting down LLM Stock Analyzer...")
+
 
 # 创建 FastAPI 应用
 app = FastAPI(
     title="LLM Stock Analyzer",
     description="基于大模型的智能股票分析系统",
-    version="0.1.0"
+    version="0.1.0",
+    lifespan=lifespan
 )
 
 # 配置 CORS
@@ -25,6 +40,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# 注册路由
+app.include_router(api_router, prefix="/api/v1")
+app.include_router(health.router, tags=["health"])
+app.include_router(stocks.router, prefix="/api/v1/stocks", tags=["stocks"])
+
 
 @app.get("/")
 async def root():
@@ -34,19 +54,6 @@ async def root():
         "version": "0.1.0",
         "docs": "/docs"
     }
-
-
-@app.get("/health")
-async def health_check():
-    """健康检查"""
-    return {"status": "healthy"}
-
-
-# TODO: 后续功能逐步实现
-# 1. 股票数据获取模块 (app/services/stock_service.py)
-# 2. LLM 集成模块 (app/services/llm_service.py)
-# 3. API 路由 (app/api/)
-# 4. 数据模型 (app/models/)
 
 
 if __name__ == "__main__":
