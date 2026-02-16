@@ -28,13 +28,29 @@
 [20260216_014] 2026-02-16 12:45 - frontend-003: 智能问答界面
   - chat-ui-developer: 聊天窗口/消息展示/流式响应
 
+[20260216_015] 2026-02-16 13:30 - infra-001: 项目初始化和环境配置
+  - 完成状态更新
+
+[20260216_016] 2026-02-16 13:50 - api-004: 数据导出API
+  - backend-developer: 导出服务/CSV&Excel支持
+
+[20260216_017] 2026-02-16 13:55 - api-005: API性能优化与缓存
+  - performance-engineer: 缓存服务/限流服务
+
 ## Current Status
 -----------------
-- Phase: COMPLETED
-- Features completed: 14
-- Features remaining: 1 (infra-001: 项目初始化和环境配置)
+- Phase: ENHANCEMENT
+- Features completed: 17
+- Features remaining: 0
 
 ## All Features Completed!
 ---------------------------
-Backend: infra-002, infra-003, data-001, data-002, llm-001, llm-002, api-001, api-002, api-003, analysis-001, analysis-002
+Backend: infra-001, infra-002, infra-003, data-001, data-002, llm-001, llm-002, api-001, api-002, api-003, api-004, api-005, analysis-001, analysis-002
 Frontend: frontend-001, frontend-002, frontend-003
+
+## Enhancement Features
+-----------------------
+- test-llm_service: LLM服务单元测试
+- test-export_service: 导出服务单元测试
+- test-cache_service: 缓存服务单元测试
+- test-rate_limiter: 限流服务单元测试

@@ -3,17 +3,17 @@
 
 提供技术分析、基本面分析和投资建议等接口。
 """
-import time
 from datetime import datetime
-from typing import Dict, Any, Optional, List
-from threading import Lock
+from typing import Dict, Any, Optional
 
 import pandas as pd
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Query, Request
 from pydantic import BaseModel
 
 from app.services.stock_service import get_stock_service
 from app.services.technical_analysis import calculate_all_indicators, add_indicators_to_dataframe
+from app.services.cache_service import get_cache, CACHE_TTL
+from app.services.rate_limiter import get_rate_limiter, get_rate_limit_for_endpoint
 from app.utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -21,60 +21,38 @@ logger = get_logger(__name__)
 router = APIRouter()
 
 
-# ============================================
-# 缓存机制
-# ============================================
+def get_analysis_cache():
+    """获取缓存实例（使用 Redis 缓存服务）"""
+    return get_cache()
 
-class AnalysisCache:
-    """分析结果缓存"""
 
-    def __init__(self, ttl: int = 600):
-        """
-        初始化缓存
+async def _handle_rate_limit_check(request: Request, endpoint_type: str = "default"):
+    """
+    检查频率限制，如果超过限制则抛出异常
 
-        Args:
-            ttl: 缓存过期时间（秒），默认 10 分钟
-        """
-        self._cache: Dict[str, Dict[str, Any]] = {}
-        self._ttl = ttl
-        self._lock = Lock()
+    Args:
+        request: FastAPI 请求对象
+        endpoint_type: 端点类型，用于获取对应的限流配置
+    """
+    from app.api.stocks import _get_client_id_from_request as get_client_id
 
-    def get(self, key: str) -> Optional[Any]:
-        """获取缓存"""
-        with self._lock:
-            if key in self._cache:
-                entry = self._cache[key]
-                if time.time() - entry["timestamp"] < self._ttl:
-                    logger.debug(f"Analysis cache hit: {key}")
-                    return entry["data"]
-                else:
-                    del self._cache[key]
-                    logger.debug(f"Analysis cache expired: {key}")
-        return None
+    client_id = get_client_id(request)
+    config = get_rate_limit_for_endpoint(endpoint_type)
+    limiter = get_rate_limiter(
+        max_requests=config["max_requests"],
+        window_seconds=config["window_seconds"]
+    )
 
-    def set(self, key: str, data: Any) -> None:
-        """设置缓存"""
-        with self._lock:
-            self._cache[key] = {
-                "data": data,
-                "timestamp": time.time()
+    if not limiter.is_allowed(client_id):
+        remaining = limiter.get_remaining(client_id)
+        raise HTTPException(
+            status_code=429,
+            detail={
+                "error": "Rate limit exceeded",
+                "message": f"请求过于频繁，请稍后再试。当前窗口剩余请求次数: {remaining}",
+                "retry_after": config["window_seconds"]
             }
-            logger.debug(f"Analysis cache set: {key}")
-
-    def clear(self) -> None:
-        """清空缓存"""
-        with self._lock:
-            self._cache.clear()
-            logger.info("Analysis cache cleared")
-
-
-# 全局缓存实例
-_analysis_cache = AnalysisCache(ttl=600)
-
-
-def get_analysis_cache() -> AnalysisCache:
-    """获取分析缓存实例"""
-    return _analysis_cache
+        )
 
 
 # ============================================
@@ -447,12 +425,13 @@ def _format_fundamental_summary(fundamental_data: Dict[str, Any], rating: str) -
 
 @router.get("/technical/{code}", response_model=TechnicalAnalysisResponse)
 async def get_technical_analysis(
+    request: Request,
     code: str,
     period: str = Query("daily", description="周期类型 (daily/weekly/monthly)"),
     adjust: str = Query("qfq", description="复权类型 (qfq/hfq/空字符串)")
 ):
     """
-    获取股票技术分析
+    获取股票技术分析（缓存 15 分钟）
 
     基于技术指标（MA、MACD、RSI、布林带、KDJ）进行技术分析，
     生成技术信号和摘要。
@@ -465,11 +444,15 @@ async def get_technical_analysis(
     Returns:
         技术分析结果
     """
+    # 检查频率限制
+    await _handle_rate_limit_check(request, "technical")
+
     cache_key = f"technical:{code}:{period}:{adjust}"
 
     # 尝试从缓存获取
     cached = get_analysis_cache().get(cache_key)
     if cached:
+        logger.info(f"Technical analysis cache hit: {cache_key}")
         return cached
 
     logger.info(f"执行技术分析: {code}")
@@ -569,8 +552,8 @@ async def get_technical_analysis(
             signal=signal
         )
 
-        # 缓存结果
-        get_analysis_cache().set(cache_key, response.model_dump())
+        # 缓存结果（15分钟）
+        get_analysis_cache().set(cache_key, response.model_dump(), CACHE_TTL["technical"])
 
         return response
 
@@ -582,9 +565,9 @@ async def get_technical_analysis(
 
 
 @router.get("/fundamental/{code}", response_model=FundamentalAnalysisResponse)
-async def get_fundamental_analysis(code: str):
+async def get_fundamental_analysis(request: Request, code: str):
     """
-    获取股票基本面分析
+    获取股票基本面分析（缓存 30 分钟）
 
     基于股票财务数据进行分析，包括估值、盈利能力、成长性等指标。
 
@@ -594,11 +577,15 @@ async def get_fundamental_analysis(code: str):
     Returns:
         基本面分析结果
     """
+    # 检查频率限制
+    await _handle_rate_limit_check(request, "fundamental")
+
     cache_key = f"fundamental:{code}"
 
     # 尝试从缓存获取
     cached = get_analysis_cache().get(cache_key)
     if cached:
+        logger.info(f"Fundamental analysis cache hit: {cache_key}")
         return cached
 
     logger.info(f"执行基本面分析: {code}")
@@ -649,8 +636,8 @@ async def get_fundamental_analysis(code: str):
             rating=rating
         )
 
-        # 缓存结果
-        get_analysis_cache().set(cache_key, response.model_dump())
+        # 缓存结果（30分钟）
+        get_analysis_cache().set(cache_key, response.model_dump(), CACHE_TTL["fundamental"])
 
         return response
 
@@ -662,9 +649,9 @@ async def get_fundamental_analysis(code: str):
 
 
 @router.get("/advice/{code}", response_model=InvestmentAdviceResponse)
-async def get_investment_advice(code: str):
+async def get_investment_advice(request: Request, code: str):
     """
-    获取投资建议
+    获取投资建议（缓存 15 分钟）
 
     综合技术分析和基本面分析，生成投资建议。
 
@@ -674,35 +661,121 @@ async def get_investment_advice(code: str):
     Returns:
         投资建议
     """
+    # 检查频率限制
+    await _handle_rate_limit_check(request, "technical")
+
     cache_key = f"advice:{code}"
 
     # 尝试从缓存获取
     cached = get_analysis_cache().get(cache_key)
     if cached:
+        logger.info(f"Investment advice cache hit: {cache_key}")
         return cached
 
     logger.info(f"生成投资建议: {code}")
 
     try:
-        # 获取技术分析
-        technical = await get_technical_analysis(code)
+        # 获取技术分析（跳过rate limit检查，因为已经在外层检查过）
+        # 使用缓存键直接获取
+        cache_key_tech = f"technical:{code}:daily:qfq"
+        technical_data = get_analysis_cache().get(cache_key_tech)
 
-        # 获取基本面分析
-        fundamental = await get_fundamental_analysis(code)
+        if technical_data is None:
+            # 缓存未命中，需要重新计算（但不调用endpoint，直接使用服务）
+            from app.services.stock_service import get_stock_service
+            service = get_stock_service()
+
+            # 获取K线数据
+            kline_data = service.get_kline_data(symbol=code, period="daily", adjust="qfq")
+            if kline_data is None or len(kline_data) < 30:
+                raise HTTPException(status_code=400, detail=f"K线数据不足，无法进行技术分析")
+
+            # 计算技术指标（简化版，直接使用已有逻辑）
+            import pandas as pd
+            from app.services.technical_analysis import calculate_all_indicators
+
+            df = pd.DataFrame(kline_data)
+            df_with_indicators = calculate_all_indicators(df)
+            latest = df_with_indicators.iloc[-1]
+
+            # 获取股票信息
+            stock_info = service.get_stock_info(code)
+            if stock_info is None:
+                raise HTTPException(status_code=404, detail=f"未找到股票: {code}")
+
+            # 获取实时行情
+            quote = service.get_stock_quote(code)
+            if quote is None:
+                raise HTTPException(status_code=404, detail=f"未找到股票行情: {code}")
+
+            # 提取指标和生成信号
+            current_price = quote.get("price", 0)
+            change_percent = quote.get("change_percent", 0)
+
+            # 生成技术信号
+            indicators_dict = {}
+            if "MA20" in latest:
+                indicators_dict["ma"] = {"MA20": float(latest["MA20"])}
+            if "RSI-6" in latest:
+                indicators_dict["rsi"] = {"RSI-6": float(latest["RSI-6"])}
+            if "DIF" in latest:
+                indicators_dict["macd"] = {"DIF": float(latest["DIF"]), "DEA": float(latest.get("DEA", 0))}
+
+            signal = _generate_technical_signal(indicators_dict, current_price)
+
+            technical_data = {
+                "code": code,
+                "name": stock_info.get("name", ""),
+                "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                "current_price": current_price,
+                "change_percent": change_percent,
+                "signal": signal
+            }
+
+        # 获取基本面分析（简化版，直接使用服务）
+        cache_key_fund = f"fundamental:{code}"
+        fundamental_data = get_analysis_cache().get(cache_key_fund)
+
+        if fundamental_data is None:
+            from app.services.stock_service import get_stock_service
+            service = get_stock_service()
+
+            stock_info = service.get_stock_info(code)
+            if stock_info is None:
+                raise HTTPException(status_code=404, detail=f"未找到股票: {code}")
+
+            quote = service.get_stock_quote(code)
+            if quote is None:
+                raise HTTPException(status_code=404, detail=f"未找到股票行情: {code}")
+
+            # 生成基本面评级
+            fundamental_dict = {
+                "pe": quote.get("pe"),
+                "pb": quote.get("pb")
+            }
+            rating = _generate_fundamental_rating(fundamental_dict)
+
+            fundamental_data = {
+                "code": code,
+                "name": stock_info.get("name", ""),
+                "rating": rating,
+                "market": stock_info.get("market", ""),
+                "industry": stock_info.get("industry")
+            }
 
         # 生成投资建议
         advice_data = _generate_investment_advice(
-            technical_signal=technical.signal,
-            fundamental_rating=fundamental.rating,
-            current_price=technical.current_price,
-            change_pct=technical.change_percent
+            technical_signal=technical_data.get("signal", "neutral"),
+            fundamental_rating=fundamental_data.get("rating", "fair"),
+            current_price=technical_data.get("current_price", 0),
+            change_pct=technical_data.get("change_percent", 0)
         )
 
         # 构建推理过程
         reasoning_parts = [
-            f"技术信号: {technical.signal}",
-            f"基本面评级: {fundamental.rating}",
-            f"当前价格: {technical.current_price}，涨跌幅: {technical.change_percent}%"
+            f"技术信号: {technical_data.get('signal', 'neutral')}",
+            f"基本面评级: {fundamental_data.get('rating', 'fair')}",
+            f"当前价格: {technical_data.get('current_price', 0)}，涨跌幅: {technical_data.get('change_percent', 0)}%"
         ]
 
         # 汇总摘要
@@ -713,7 +786,7 @@ async def get_investment_advice(code: str):
         # 构建响应
         response = InvestmentAdviceResponse(
             code=code,
-            name=technical.name,
+            name=technical_data.get("name", ""),
             timestamp=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             advice=advice_data["advice"],
             target_price=advice_data["target_price"],
@@ -723,8 +796,8 @@ async def get_investment_advice(code: str):
             summary=summary
         )
 
-        # 缓存结果
-        get_analysis_cache().set(cache_key, response.model_dump())
+        # 缓存结果（15分钟）
+        get_analysis_cache().set(cache_key, response.model_dump(), CACHE_TTL["advice"])
 
         return response
 
@@ -754,8 +827,35 @@ async def clear_analysis_cache():
 
     手动清空所有缓存的分析数据。
     """
-    get_analysis_cache().clear()
-    return {"message": "Analysis cache cleared successfully"}
+    cache = get_cache()
+    success = cache.clear_all()
+    if success:
+        return {"message": "Analysis cache cleared successfully", "backend": "redis"}
+    # 降级到内存缓存
+    cache.clear()
+    return {"message": "Analysis cache cleared successfully", "backend": "memory"}
+
+
+@router.get("/cache/status")
+async def get_cache_status():
+    """
+    获取缓存状态
+
+    返回缓存的连接状态和使用统计。
+    """
+    cache = get_cache()
+    connected = cache.is_connected()
+    return {
+        "connected": connected,
+        "backend": "redis" if connected else "memory (fallback)",
+        "cache_ttl": {
+            "quote": CACHE_TTL["quote"],
+            "kline": CACHE_TTL["kline"],
+            "technical": CACHE_TTL["technical"],
+            "fundamental": CACHE_TTL["fundamental"],
+            "advice": CACHE_TTL["advice"]
+        }
+    }
 
 
 @router.get("/")

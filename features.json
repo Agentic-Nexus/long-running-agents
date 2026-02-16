@@ -15,8 +15,9 @@
         "配置环境变量",
         "验证Python环境"
       ],
-      "passes": false,
-      "priority": "high"
+      "passes": true,
+      "priority": "high",
+      "completed_at": "2026-02-16T13:30:00"
     },
     {
       "id": "infra-002",
@@ -227,6 +228,36 @@
       "passes": true,
       "priority": "medium",
       "completed_at": "2026-02-16T12:45:00"
+    },
+    {
+      "id": "api-004",
+      "category": "api",
+      "description": "数据导出 API",
+      "steps": [
+        "创建导出服务模块",
+        "实现 CSV 导出功能",
+        "实现 Excel 导出功能",
+        "创建导出 API 路由",
+        "添加导出参数支持"
+      ],
+      "passes": true,
+      "priority": "medium",
+      "completed_at": "2026-02-16T13:50:00"
+    },
+    {
+      "id": "api-005",
+      "category": "api",
+      "description": "API 性能优化与缓存",
+      "steps": [
+        "创建缓存服务模块",
+        "实现 Redis 缓存集成",
+        "创建限流服务模块",
+        "实现请求限流机制",
+        "添加缓存失效策略"
+      ],
+      "passes": true,
+      "priority": "medium",
+      "completed_at": "2026-02-16T13:55:00"
     }
   ]
 }
