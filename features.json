@@ -74,8 +74,9 @@
         "实现增量更新逻辑",
         "验证数据完整性"
       ],
-      "passes": false,
-      "priority": "medium"
+      "passes": true,
+      "priority": "medium",
+      "completed_at": "2026-02-16T12:30:00"
     },
     {
       "id": "llm-001",
@@ -148,8 +149,9 @@
         "实现报告格式化",
         "添加缓存机制"
       ],
-      "passes": false,
-      "priority": "medium"
+      "passes": true,
+      "priority": "medium",
+      "completed_at": "2026-02-16T12:30:00"
     },
     {
       "id": "analysis-001",
@@ -177,8 +179,9 @@
         "实现趋势判断",
         "添加形态识别可视化"
       ],
-      "passes": false,
-      "priority": "medium"
+      "passes": true,
+      "priority": "medium",
+      "completed_at": "2026-02-16T12:30:00"
     },
     {
       "id": "frontend-001",
