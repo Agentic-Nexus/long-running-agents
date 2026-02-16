@@ -112,13 +112,13 @@ class TestSingleCandlePatterns:
     def test_shooting_star_bearish(self):
         """测试射击之星"""
         # 上影线 >= 实体 * 2, 下影线 <= 实体 * 0.1
-        # open=10, close=10.05, high=13, low=9.995
-        # body=0.05, upper_shadow=2.95, lower_shadow=0.005
+        # open=10, close=10.1, high=12, low=10.0
+        # body=0.1, upper_shadow=1.9, lower_shadow=0.0
         candle = pd.Series({
             "open": 10.0,
-            "high": 13.0,
-            "low": 9.995,
-            "close": 10.05
+            "high": 12.0,
+            "low": 10.0,
+            "close": 10.1
         })
         df = pd.DataFrame([candle])
 
@@ -129,9 +129,9 @@ class TestSingleCandlePatterns:
         """测试倒锤子线"""
         candle = pd.Series({
             "open": 10.0,
-            "high": 13.0,
-            "low": 9.995,
-            "close": 10.05
+            "high": 12.0,
+            "low": 10.0,
+            "close": 10.1
         })
         df = pd.DataFrame([candle])
 

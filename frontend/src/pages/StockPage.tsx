@@ -5,6 +5,7 @@ import { StockChart } from '../components/StockChart';
 import { TechnicalIndicators } from '../components/TechnicalIndicators';
 import type { StockQuote, StockInfo } from '../types/stock';
 import { stockApi } from '../services/stockApi';
+import './StockPage.css';
 
 export function StockPage() {
   const [watchedStocks, setWatchedStocks] = useState<string[]>(() => {

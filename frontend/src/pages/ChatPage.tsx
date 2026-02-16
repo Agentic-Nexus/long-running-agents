@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef } from 'react';
-import { Message, QuickQuestion } from '../components/types';
+import type { Message, QuickQuestion } from '../components/types';
 import MessageList from '../components/MessageList';
 import ChatWindow from '../components/ChatWindow';
 import QuickQuestions from '../components/QuickQuestions';

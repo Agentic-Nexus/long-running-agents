@@ -23,16 +23,6 @@ function calculateSMA(data: KLineData[], period: number): (number | null)[] {
   return result;
 }
 
-// 计算MACD
-function calculateMACD(data: KLineData[]) {
-  const ema12 = calculateEMA(data.map((d) => d.close), 12);
-  const ema26 = calculateEMA(data.map((d) => d.close), 26);
-  const dif = ema12.map((v, i) => (v && ema26[i] ? v - ema26[i] : null));
-  const dea = calculateEMA(dif.filter((v): v is number => v !== null), 9);
-  const macd = dif.map((v, i) => (v && dea[i] !== null ? (v - dea[i]!) * 2 : null));
-  return { dif, dea, macd };
-}
-
 // 计算指数移动平均线
 function calculateEMA(values: number[], period: number): (number | null)[] {
   const result: (number | null)[] = [];
@@ -51,15 +41,16 @@ function calculateEMA(values: number[], period: number): (number | null)[] {
       ema = sum / period;
       result.push(ema);
     } else {
-      ema = (values[i] - ema!) * multiplier + ema;
+      const currentEma = ema as number;
+      ema = (values[i] - currentEma) * multiplier + currentEma;
       result.push(ema);
     }
- result;
+  }
+  return result;
 }
 
 // 计算RSI
-function  }
-  return calculateRSI(data: KLineData[], period: number = 14): (number | null)[] {
+function calculateRSI(data: KLineData[], period: number = 14): (number | null)[] {
   const result: (number | null)[] = [];
   const changes: number[] = [];
 
@@ -116,8 +107,8 @@ function calculateKDJ(data: KLineData[], period: number = 9): Array<{ k: number;
 
       const k = (2 * (result[i - 1]?.k || 50) + rsv) / 3;
       const d = (2 * (result[i - 1]?.d || 50) + k) / 3;
-      const j = 3 * k - 2 * d;
-      result.push({ k, d, j });
+      const jVal = 3 * k - 2 * d;
+      result.push({ k, d, j: jVal });
     }
   }
   return result;

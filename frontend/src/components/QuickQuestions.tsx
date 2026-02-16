@@ -1,4 +1,4 @@
-import { QuickQuestion } from './types';
+import type { QuickQuestion } from './types';
 import './QuickQuestions.css';
 
 interface QuickQuestionsProps {
