@@ -315,8 +315,9 @@
         "实现组合分析报告",
         "添加历史记录追踪"
       ],
-      "passes": false,
-      "priority": "medium"
+      "passes": true,
+      "priority": "medium",
+      "completed_at": "2026-02-17T12:30:00"
     },
     {
       "id": "infra-004",
@@ -346,6 +347,65 @@
       ],
       "passes": false,
       "priority": "medium"
+    },
+    {
+      "id": "feature-003",
+      "category": "feature",
+      "description": "财经新闻资讯",
+      "steps": [
+        "实现新闻数据获取",
+        "实现新闻分类筛选",
+        "实现新闻搜索功能",
+        "实现新闻缓存",
+        "添加新闻摘要生成"
+      ],
+      "passes": true,
+      "priority": "medium",
+      "completed_at": "2026-02-17T14:00:00"
+    },
+    {
+      "id": "feature-004",
+      "category": "feature",
+      "description": "股票龙虎榜数据",
+      "steps": [
+        "实现龙虎榜数据获取",
+        "实现机构席位追踪",
+        "实现资金流向分析",
+        "实现大单监控",
+        "添加数据可视化"
+      ],
+      "passes": true,
+      "priority": "medium",
+      "completed_at": "2026-02-17T12:30:00"
+    },
+    {
+      "id": "api-008",
+      "category": "api",
+      "description": "API 版本管理与文档",
+      "steps": [
+        "实现 API 版本控制",
+        "完善 API 文档",
+        "添加 API 监控面板",
+        "实现 API 使用统计",
+        "添加 API 变更日志"
+      ],
+      "passes": false,
+      "priority": "low"
+    },
+    {
+      "id": "infra-005",
+      "category": "infrastructure",
+      "description": "监控系统集成",
+      "steps": [
+        "集成 Prometheus 指标",
+        "集成 Grafana 看板",
+        "实现健康检查端点",
+        "添加性能监控",
+        "实现告警通知"
+      ],
+      "passes": true,
+      "priority": "medium",
+      "completed_at": "2026-02-17T12:00:00"
     }
   ]
 }

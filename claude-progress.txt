@@ -51,6 +51,9 @@
 Backend: infra-001, infra-002, infra-003, data-001, data-002, llm-001, llm-002, api-001, api-002, api-003, api-004, api-005, analysis-001, analysis-002
 Frontend: frontend-001, frontend-002, frontend-003
 
+[20260217_001] 2026-02-17 12:00 - infra-005: 监控系统集成
+  - monitor-engineer: Prometheus指标/Grafana看板/健康检查/告警通知
+
 ## Enhancement Features
 -----------------------
 - test-llm_service: LLM服务单元测试

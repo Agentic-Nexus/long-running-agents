@@ -19,6 +19,16 @@ from app.models.user import (
     UserRole,
     USER_MODELS,
 )
+from app.models.portfolio import (
+    Portfolio,
+    Position,
+    Transaction,
+    PortfolioHistory,
+    PortfolioStatus,
+    PositionType,
+    TransactionType,
+    PORTFOLIO_MODELS,
+)
 
 # 导出所有模型
 __all__ = [
@@ -32,6 +42,14 @@ __all__ = [
     "APIKey",
     "UserSession",
     "UserRole",
+    "Portfolio",
+    "Position",
+    "Transaction",
+    "PortfolioHistory",
+    "PortfolioStatus",
+    "PositionType",
+    "TransactionType",
     "STOCK_MODELS",
     "USER_MODELS",
+    "PORTFOLIO_MODELS",
 ]
