@@ -162,27 +162,29 @@ class TopListService:
             df = ak.stock_lhb_detail_em(start_date=start_date, end_date=end_date)
 
             if df is not None and not df.empty:
+                # 过滤目标股票（去掉前缀后比较）
+                code_to_compare = code_normalized.replace("sh", "").replace("sz", "").replace("bj", "")
+                df = df[df["代码"].astype(str).str.contains(code_to_compare, na=False)]
+
                 result = []
                 for _, row in df.iterrows():
-                    # 根据日期过滤
-                    trade_date = str(row.get("交易日期", ""))
-                    if start_date and trade_date < start_date:
-                        continue
-                    if end_date and trade_date > end_date:
-                        continue
+                    trade_date = str(row.get("上榜日", ""))
+                    # 转换日期格式
+                    if "-" in trade_date:
+                        trade_date = trade_date.replace("-", "")
 
                     result.append({
                         "date": trade_date,
-                        "code": code_normalized,
-                        "name": str(row.get("股票代码", code_normalized)),
+                        "code": str(row.get("代码", "")),
+                        "name": str(row.get("名称", "")),
                         "close": float(row.get("收盘价", 0) or 0),
                         "change_percent": float(row.get("涨跌幅", 0) or 0),
                         "buy_amount": float(row.get("龙虎榜买入额", 0) or 0),
                         "sell_amount": float(row.get("龙虎榜卖出额", 0) or 0),
                         "net_buy": float(row.get("龙虎榜净买额", 0) or 0),
                         "reason": str(row.get("上榜原因", "")),
-                        "buy_seats": str(row.get("龙虎榜买入席位", "")),
-                        "sell_seats": str(row.get("龙虎榜卖出席位", "")),
+                        "buy_seats": str(row.get("龙虎榜买入席位", "")) if "龙虎榜买入席位" in row.index else "",
+                        "sell_seats": str(row.get("龙虎榜卖出席位", "")) if "龙虎榜卖出席位" in row.index else "",
                     })
 
                 # 设置缓存

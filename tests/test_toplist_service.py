@@ -95,7 +95,7 @@ class TestTopListService:
 
         assert service.use_cache is False
 
-    @patch("app.services.toplist_service.ak.stock_lhb_em")
+    @patch("app.services.toplist_service.ak.stock_lhb_stock_statistic_em")
     def test_get_daily_toplist_success(self, mock_ak_func):
         """测试获取每日龙虎榜成功"""
         mock_ak_func.return_value = pd.DataFrame({
@@ -122,16 +122,15 @@ class TestTopListService:
     def test_get_stock_toplist_success(self, mock_ak_func):
         """测试获取个股龙虎榜成功"""
         mock_ak_func.return_value = pd.DataFrame({
-            "交易日期": ["20240115", "20240110"],
-            "股票代码": ["600000", "600000"],
+            "上榜日": ["2024-01-15", "2024-01-10"],
+            "代码": ["600000", "600000"],
+            "名称": ["浦发银行", "浦发银行"],
             "收盘价": [10.5, 10.2],
             "涨跌幅": [1.2, -0.8],
             "龙虎榜买入额": [20000000, 15000000],
             "龙虎榜卖出额": [10000000, 18000000],
             "龙虎榜净买额": [10000000, -3000000],
             "上榜原因": ["日涨幅偏离值达7%", "日振幅值达15%"],
-            "龙虎榜买入席位": ["机构专用", "券商营业部"],
-            "龙虎榜卖出席位": ["券商营业部", "机构专用"],
         })
 
         result = self.service.get_stock_toplist("600000")
