@@ -23,18 +23,37 @@
 │   │   ├── health.py         # 健康检查
 │   │   ├── stocks.py         # 股票查询 API
 │   │   ├── chat.py           # 智能问答 API
-│   │   └── analysis.py       # 分析报告 API
+│   │   ├── analysis.py       # 分析报告 API
+│   │   ├── export.py         # 数据导出 API
+│   │   ├── auth.py           # 用户认证 API
+│   │   ├── alert.py          # 预警 API
+│   │   ├── websocket.py      # WebSocket API
+│   │   ├── portfolio.py       # 投资组合 API
+│   │   ├── news.py           # 财经新闻 API
+│   │   ├── toplist.py        # 龙虎榜 API
+│   │   └── metrics.py        # 监控指标 API
 │   ├── services/              # 业务服务
 │   │   ├── stock_service.py   # 股票数据服务
 │   │   ├── llm_service.py    # LLM 集成服务
 │   │   ├── prompt_templates.py    # Prompt 模板
 │   │   ├── technical_analysis.py   # 技术指标
 │   │   ├── pattern_recognition.py # K线形态识别
-│   │   └── data_storage.py   # 数据存储
+│   │   ├── data_storage.py   # 数据存储
+│   │   ├── export_service.py # 数据导出服务
+│   │   ├── cache_service.py  # 缓存服务
+│   │   ├── rate_limiter.py  # 限流服务
+│   │   ├── auth_service.py   # 认证服务
+│   │   ├── alert_service.py  # 预警服务
+│   │   ├── portfolio_service.py  # 投资组合服务
+│   │   ├── news_service.py   # 新闻服务
+│   │   └── toplist_service.py # 龙虎榜服务
 │   ├── db/                   # 数据库
 │   │   └── database.py       # 数据库连接管理
 │   ├── models/               # 数据模型
-│   │   └── stock.py
+│   │   ├── stock.py
+│   │   ├── user.py
+│   │   ├── alert.py
+│   │   └── portfolio.py
 │   └── utils/                # 工具
 │       └── logger.py         # 日志配置
 ├── frontend/                  # React 前端
@@ -47,9 +66,47 @@
 │   │   └── store/            # 状态管理
 │   └── package.json
 ├── tests/                    # 测试
-├── features.json              # 功能清单
-├── claude-progress.txt        # 进度记录
-└── requirements.txt          # Python 依赖
+├── monitoring/               # 监控配置 (Prometheus/Grafana)
+├── docker-compose.yml        # Docker 编排
+├── Dockerfile                # 后端镜像
+├── frontend/Dockerfile       # 前端镜像
+├── features.json             # 功能清单
+├── claude-progress.txt      # 进度记录
+└── requirements.txt         # Python 依赖
+```
+
+## 部署
+
+### Docker 部署 (推荐)
+
+```bash
+# 复制环境变量配置
+cp .env.example .env
+
+# 编辑 .env 填入实际配置
+vim .env
+
+# 构建并启动所有服务
+docker compose up -d
+
+# 查看服务状态
+docker compose ps
+
+# 查看日志
+docker compose logs -f backend
+```
+
+### 手动部署
+
+```bash
+# 后端
+pip install -r requirements.txt
+python main.py
+
+# 前端
+cd frontend
+npm install
+npm run dev
 ```
 
 ## 开发环境
@@ -110,11 +167,21 @@ TUSHARE_TOKEN=your_tushare_token
 | `/api/v1/stocks/quote/{code}` | GET | 实时行情 |
 | `/api/v1/stocks/kline/{code}` | GET | 历史K线 |
 | `/api/v1/stocks/{code}` | GET | 股票详情 |
+| `/api/v1/stocks/export/{code}` | GET | 数据导出 |
 | `/api/v1/chat` | POST | 智能问答 |
 | `/api/v1/analysis/technical/{code}` | GET | 技术分析 |
 | `/api/v1/analysis/fundamental/{code}` | GET | 基本面分析 |
 | `/api/v1/analysis/advice/{code}` | GET | 投资建议 |
+| `/api/v1/auth/register` | POST | 用户注册 |
+| `/api/v1/auth/login` | POST | 用户登录 |
+| `/api/v1/auth/refresh` | POST | 刷新Token |
+| `/api/v1/alerts` | GET/POST | 预警管理 |
+| `/api/v1/portfolio` | GET/POST | 投资组合 |
+| `/api/v1/news` | GET | 财经新闻 |
+| `/api/v1/toplist` | GET | 龙虎榜数据 |
+| `/metrics` | GET | Prometheus指标 |
 | `/health` | GET | 健康检查 |
+| `/ws/quote` | WebSocket | 实时行情推送 |
 
 ### 技术指标
 
@@ -201,6 +268,47 @@ cd frontend && npm test
 ## 当前进度
 
 详见 `claude-progress.txt`
+
+## 已完成功能 (22+)
+
+### 基础设施
+- infra-001: 项目初始化和环境配置
+- infra-002: FastAPI 后端基础框架搭建
+- infra-003: 数据库连接配置
+- infra-004: Docker 部署支持
+- infra-005: 监控系统集成
+
+### 数据层
+- data-001: 股票数据获取模块
+- data-002: 股票数据存储
+
+### LLM
+- llm-001: LLM 集成基础架构
+- llm-002: 股票分析 Prompt 模板
+
+### API
+- api-001: 股票查询 API
+- api-002: 智能问答 API
+- api-003: 股票分析报告 API
+- api-004: 数据导出 API
+- api-005: API 性能优化与缓存
+- api-006: 用户认证与权限管理
+- api-007: 实时行情 WebSocket
+
+### 分析
+- analysis-001: 技术指标计算
+- analysis-002: K线形态识别
+
+### 业务功能
+- feature-001: 股票预警功能
+- feature-002: 投资组合管理
+- feature-003: 财经新闻资讯
+- feature-004: 股票龙虎榜数据
+
+### 前端
+- frontend-001: 前端基础框架
+- frontend-002: 股票搜索和展示
+- frontend-003: 智能问答界面
 
 ## 许可
 
